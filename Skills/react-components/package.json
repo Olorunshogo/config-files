@@ -2,6 +2,7 @@
   "name": "react-components",
   "version": "1.0.0",
   "description": "Design-to-code prompt to React components for Stitch MCP",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "validate": "node scripts/validate.js",
