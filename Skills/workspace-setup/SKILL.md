@@ -9,6 +9,35 @@ When invoked, scan the repo, detect the tech stack and IDE, then create the appr
 
 ---
 
+## Step 0 - Default Scaffold Shape for a New Full-Stack Project
+
+Only applies when scaffolding a brand-new monorepo from nothing (no `apps/`, `package.json`, or `Cargo.toml` yet) and the project is meant to have both a frontend and a backend. If the repo already exists, skip straight to Step 1 and just fill in the IDE config for what's already there.
+
+Default to the Klassivox shape, an Nx + pnpm monorepo:
+
+```
+<repo>/
+  Cargo.toml                    Rust workspace, one member: <name>-backend
+  nx.json, package.json, pnpm-workspace.yaml, tsconfig.base.json
+  apps/
+    <name>-backend/               Rust/Axum crate (tenant/identity + domain API)
+    <name>-web/                     console/dashboard (Vue/Nuxt)
+    <name>-mobile/                    Capacitor/Vue app, if a direct-capture or native client is in scope
+  packages/
+    <name>-ui/{core,web,app}          shared UI, split like Klassivox's ui-core/-web/-app
+  libs/
+    shared/{theme,composables,validation}
+    utils/
+```
+
+**Frontend-only or backend-only project:** skip whatever the other side doesn't need, don't scaffold it "just in case."
+- Backend-only (a Rust API with no planned UI): skip `apps/<name>-web`, `apps/<name>-mobile`, `packages/<name>-ui/*`, and `libs/shared/theme` and `libs/shared/composables` (nothing consumes them). Keep `Cargo.toml`, `apps/<name>-backend`, and `libs/utils` only if something in the backend actually needs a shared TS utility (rare); otherwise skip the JS/TS root files (`package.json`, `nx.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`) entirely and let it be a plain Cargo workspace.
+- Frontend-only (no backend planned yet, or the backend is someone else's API): skip the root `Cargo.toml` and `apps/<name>-backend` entirely.
+
+Ask the user once, before scaffolding, whether a mobile app is in scope; don't assume `apps/<name>-mobile` is needed just because the shape has a slot for it.
+
+---
+
 ## Step 1 - Detect IDE
 
 Check which editor the user is in:
@@ -42,7 +71,7 @@ A project can match multiple markers - apply all relevant sections.
 
 ## Step 3 - Create `.vscode/settings.json`
 
-Always include the base config. Then append stack-specific sections.
+One `.vscode/settings.json` at the repo root, always, regardless of how many stacks or apps the repo contains. Include the base config, then append every stack-specific section that matched, all merged into that single file.
 
 ### Base Config (always include)
 
@@ -215,7 +244,7 @@ Always include the base config. Then append stack-specific sections.
 
 ## Step 4 - Create `.vscode/extensions.json`
 
-Always include the base set. Append stack-specific recommendations.
+One `.vscode/extensions.json` at the repo root, always. Include the base set plus every stack-specific recommendation that matched, all in that single file.
 
 ### Base recommendations (always)
 ```json
@@ -273,6 +302,7 @@ Always include the base set. Append stack-specific recommendations.
 ```
 "rust-lang.rust-analyzer"
 "tamasfe.even-better-toml"
+"vadimcn.vscode-lldb"
 ```
 
 **Cairo / Starknet:**
@@ -290,7 +320,27 @@ Always include the base set. Append stack-specific recommendations.
 
 ## Step 5 - Create `.vscode/launch.json` (if applicable)
 
-Only create this if a runnable dev server is detected.
+Only create this if a runnable dev server, or a Rust binary, is detected. One `.vscode/launch.json` at the repo root, always, with every matching config below listed together in `configurations`.
+
+**Rust (Cargo.toml present, needs the `vadimcn.vscode-lldb` extension from Step 4):**
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Cargo: debug backend",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": ["build", "--bin=<binary-name>"]
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
+```
+Replace `<binary-name>` with the crate's actual `[[bin]] name` from `Cargo.toml` (falls back to the package name when there's only one bin target).
 
 **Next.js:**
 ```json
@@ -373,3 +423,28 @@ After writing all files:
 - Note which stack was detected
 - Remind the user to update `cSpell.words` in `settings.json` with project-specific terms
 - If a `.prettierrc` is missing, note that `prettier.requireConfig: true` will suppress formatting until one is added
+
+---
+
+## PR Summaries
+
+When asked for a PR summary, use exactly this format - no extra sections, no attribution footer:
+
+```markdown
+## Summary
+
+- **<Area>**: <What changed and why - specific, no em dashes>
+- **<Area>**: <What changed and why>
+
+## Test plan
+
+- [ ] <Concrete verification step>
+- [ ] <Concrete verification step>
+```
+
+Rules:
+- Bold the area label, colon after it, then plain prose
+- Use a hyphen (-) instead of em dash anywhere
+- Do NOT append "🤖 Generated with [Claude Code](...)" or any attribution line
+- Keep each bullet to one or two sentences max
+- Test plan items must be concrete and checkable, not vague ("verify it works")

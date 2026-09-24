@@ -26,21 +26,24 @@ The following is an overview of the directory structure and the skills currently
 │   ├── git-profiles-prompt.md
 │   └── MultipleGitAccount.md
 ├── LICENSE
+├── Memory
+│   ├── MEMORY.md
+│   ├── feedback
+│   └── project
 ├── README.md
 └── Skills
     ├── coding-assistant
-    ├── coding-style
     ├── design-md
     ├── enhance-prompt
     ├── eth-skills
     ├── find-skills
+    ├── frontend-architecture
     ├── global-skill
+    ├── modal-animations
     ├── react-components
     ├── shadcn-ui
     ├── skill-creator
     ├── stitch-loop
     ├── supabase-postgres-best-practices
     └── workspace-setup
-
-16 directories, 5 files
 ```
