@@ -83,7 +83,7 @@ Answer directly and clearly. No preamble, no plan needed.
 
 ## Comment Style
 
-Applies to Cairo, TypeScript, JavaScript, and Rust.
+Applies to Cairo, TypeScript, JavaScript, Rust, and CSS.
 
 ### Section separators
 
@@ -153,6 +153,57 @@ Regular `//` comments are fine inside functions or for quick inline explanations
 - JSX/TSX markup only (inside a component's returned tree): `{/* ... */}`, the braces are required there because a JSX child must be a valid JS expression. `{/* */}` is invalid everywhere else, never use it in Rust, Cairo, or plain TS/JS logic.
 - Vue `<template>` blocks: HTML-style `<!-- ... -->`. Vue `<script>` blocks use normal `//` / `/* */`.
 
+### Never justify a general rule by the caller that prompted it
+
+**Locked in 2026-11-21.** When the thing being declared is general (a CSS rule, a utility class, a shared helper, a design token, a config value), the comment must not narrate the one feature that happened to prompt writing it. That is history, not behaviour: it is wrong the moment a second caller uses the same rule, and it misleads the next reader into thinking the rule is scoped to that feature. The general thing gets its `// === Name` separator and nothing else, unless there is something non-obvious about the rule itself.
+
+```css
+/* WRONG - a global rule explained by the feature that happened to need it first */
+/* === Anchored sections
+   Footer links point at a section rather than the top of a page, so the jump has to
+   ease and the landing point has to clear the fixed header, which would otherwise sit
+   on top of the heading the link promised. */
+html { scroll-behavior: smooth; }
+
+/* RIGHT */
+/* === Anchored sections */
+html { scroll-behavior: smooth; }
+```
+
+A WHY is still welcome when it is a property of the declaration itself rather than of its first caller, for example why a cap only applies above a breakpoint, or why a value cannot be lowered.
+
+### Sentence count picks the comment's form
+
+**Locked in 2026-11-21.** Count the full stops, that decides the syntax, there is no judgement call and no width exception.
+
+- **One sentence, so one full stop: a single-line comment.** `//` in Rust, Cairo, TypeScript, JavaScript and Vue `<script>`; a one-line `/* ... */` in CSS, which has no line comment. It stays on one line however long that line is, never wrapped and never promoted to a block just because it is wide.
+- **Two or more sentences: a block comment.** `/* ... */`, or `{/* ... */}` in JSX markup, with one sentence per line inside it.
+
+Never a block comment wrapping a single sentence, and never a run of `//` lines carrying a multi-sentence paragraph.
+
+Doc comments on an exported declaration keep their `/** ... */` form, the rule governs their content instead: one sentence stays on one line, several sentences get a line each.
+
+```ts
+// WRONG - one sentence inflated into a block
+/*
+ * Driven by a transform on the compositor rather than a width on each scroll event, so
+ * it costs nothing on a long page.
+ */
+
+// RIGHT - one sentence, one line, however wide
+// Driven by a transform on the compositor rather than a width on each scroll event, so it costs nothing on a long page.
+
+// WRONG - a paragraph spread across line comments
+// A form and its confirmation are the same card changing state, so they cross-fade in
+// place. Pair with FormSwap, which handles the height change.
+
+// RIGHT - two sentences, so a block, one sentence per line
+/*
+ * A form and its confirmation are the same card changing state, so they cross-fade in place.
+ * Pair with FormSwap, which handles the height change.
+ */
+```
+
 ### Line breaks inside a multi-line comment
 
 One sentence per line. A new line starts right after a sentence's full stop, never mid-sentence for width, the number of full stops in the comment is the number of lines it takes, regardless of how long any single line ends up.
@@ -180,6 +231,7 @@ One sentence per line. A new line starts right after a sentence's full stop, nev
 
 - Do NOT use the em dash character anywhere: markdown files, commit messages, PR descriptions, or documentation.
 - Do NOT substitute a hyphen in place of an em dash. Rewrite the sentence so neither is needed.
+- Never use the section sign "§", or any other uncommon typographic symbol (¶, †, ‡, ※ and the like), to refer to a section. Write "Section 12" or "S12". This applies everywhere: chat replies, markdown, code comments, commit messages and PR descriptions.
 - Hyphens are only for their correct grammatical purpose: compound words (`up-to-date`, `self-hosted`), prefixes, and ranges.
 - Prefer bullet points over long paragraphs.
 - Be concise and specific. No filler.
@@ -247,6 +299,56 @@ Margin is still correct only for these, and nothing else:
 - inline spacing next to running text, e.g. `ml-1` before a unit suffix
 - `m-0` / `my-0` resets that strip a browser default
 
+### Colors: design tokens, never bare palette classes
+
+**Locked in 2026-10-03.** Every color class must come from the project's design tokens (the Tailwind preset / theme CSS variables, e.g. `text-ink-primary`, `bg-surface-container`, `text-error`, `bg-accent-blue`). Never use Tailwind's raw palette (`text-yellow-700`, `bg-red-50`, `border-gray-200`, `bg-blue-500`) or arbitrary hex values (`bg-[#E4E4E7]`) in new or edited code.
+
+- Before picking a color, read the theme (e.g. `tailwind.preset.cjs`, `global.css`) and choose the closest semantic token.
+- If no token fits (e.g. there is no warning/amber token), use the nearest existing token and tell the user the gap exists, proposing a new token for the theme rather than reaching for a raw palette class.
+- Raw palette classes already in files you touch get flagged to the user, not silently left in your own new lines.
+
+```tsx
+// wrong
+<span className="text-yellow-700">0 photos</span>
+
+// correct - nearest existing token, gap reported to the user
+<span className="text-error">0 photos</span>
+```
+
+---
+
+## Forms: RHF + Zod + shared fields (React only)
+
+**Applies only when the project is React** (including React Router, Next.js App/Pages with React, etc.). Skip this entire section for Vue, Nuxt, Rust, Cairo, plain Node, or any non-React stack; follow that project's existing form pattern instead.
+
+When the React repo already has shared form fields and Zod factories, use them; do not invent a parallel pattern. Debridgers is the reference for this stack.
+
+### Stack
+
+- `useForm` with `zodResolver(schema)` for every real form
+- Wire fields with RHF `Controller`, or `register` only when a shared field component already forwards a ref
+- No ad-hoc `useState` form state for multi-field forms that should be validated
+
+### Schemas and reusable validations
+
+- Put form schemas in the shared schemas package/dir (Debridgers: `packages/ui-web/src/schemas/`)
+- Compose field rules from shared factories (Debridgers: `schemas/generics.ts` - `createEmailSchema`, `createPhoneSchema`, `createPasswordSchema`, `createNameSchema`, `createRequiredString`, `createOtpSchema`, `createBvnSchema`, `createWordCountSchema`, `createDocumentFileSchema`, `createCvSchema`, …)
+- Do not redeclare the same email/phone/password/name rule inline in a route or a one-off schema
+- Copy (labels, required messages) may vary per form via factory options; the rule itself must not be duplicated
+
+### Field components
+
+- Prefer existing shared input components over bare `<input>` / `<textarea>` / `<select>`
+- Debridgers examples: `TextInputField`, `EmailInputField`, `PasswordInputField`, `NumberInputField`, `PhoneInputField`, `TextareaField`, `SelectField`, `SelectInputField`, `UploadField`, `DateTimeInputField`, `SearchInputField`, `ToggleField`
+- If the same control or layout appears in more than one place, extract it into the shared UI package rather than pasting markup again
+
+### Server field errors
+
+- RHF: `applyServerFieldErrors(error, form)`
+- Plain state forms: `extractServerFieldErrors(error)`
+- Dialogs: `useDialogSubmission` (already exposes `fieldErrors`)
+- Only map an error onto a field when it is genuinely about that field's value; whole-form preconditions stay a banner
+
 ---
 
 ## General Code Behavior
@@ -254,6 +356,7 @@ Margin is still correct only for these, and nothing else:
 - Do not add features, refactors, or abstractions beyond what was asked.
 - Do not add error handling for scenarios that cannot happen.
 - Do not write comments that describe what the code does. Only comment on non-obvious WHY.
+- Do not add a comment the user did not ask for, not even one that would otherwise pass the non-obvious-WHY rule above. If an edit touches a line that already has an unrelated comment on it, leave that existing comment alone rather than rewriting or removing it as a side effect.
 - Do not create new files when editing an existing one will do.
 
 ### Function and identifier names must be self-explanatory out of context

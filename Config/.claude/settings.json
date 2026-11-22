@@ -1,0 +1,104 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(/.claude/skills/coding-assistant/**)",
+      "Edit(/.claude/skills/global-skill/**)",
+      "Bash(npm run *)",
+      "Bash(pnpm --version)",
+      "Read(//usr/local/bin/.tools/**)",
+      "Bash(cat /usr/local/bin/pnpm && ls /usr/local/bin/.tools/pnpm-exe/ 2>/dev/null)",
+      "Read(//home/olorunshogo/.local/share/pnpm/**)",
+      "Bash(npm --version)",
+      "Bash(corepack --version)",
+      "Bash(npm install *)",
+      "Bash(find /home/olorunshogo/.claude -name \"*.md\" | grep -E \"skill|coding-assistant|workspace\" | head -20)",
+      "Read(//home/olorunshogo/.claude/**)",
+      "Edit(/.claude/skills/workspace-setup/**)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git switch *)",
+      "Bash(git reset *)",
+      "Bash(git push *)",
+      "Bash(pnpm nx *)",
+      "Bash(pnpm info *)",
+      "Bash(python3 -c ' *)",
+      "Bash(npx tsc *)",
+      "Bash(cargo run *)"
+    ],
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "/home/olorunshogo/.local/share/pnpm"
+    ]
+  },
+  "model": "claude-opus-5",
+  "worktree": {
+    "baseRef": "fresh"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/olorunshogo/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "sanity@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "cloudflare": {
+      "source": {
+        "source": "github",
+        "repo": "cloudflare/skills"
+      }
+    }
+  },
+  "feedbackDrafts": "quiet",
+  "effortLevel": "medium",
+  "modelSettings": {
+    "claude-sonnet-5": {
+      "effortLevel": "high"
+    },
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    }
+  },
+  "awaySummaryEnabled": false,
+  "askUserQuestionTimeout": "never",
+  "tui": "fullscreen",
+  "theme": "dark",
+  "editorMode": "normal",
+  "preferredNotifChannel": "notifications_disabled",
+  "autoCompactEnabled": false,
+  "agentPushNotifEnabled": false,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(rm -rf:*) in /home/olorunshogo/Projects/Zunetra/culm — irreversible local destruction, no evidence of routine need beyond default coverage"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Primary use of Claude Code**: software development",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: not queryable here — assume private per shipped default (github.com:Zunetra/culm.git; no visibility signal found)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: 1Password CLI (`op read`) referenced in this repo's config",
+      "**Default / protected branches**: not queryable here (gh visibility/rulesets/branch protection unavailable) — treat as unknown, do not assume unprotected",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Source control**: The trusted repo (github.com:Zunetra/culm.git) and its remote(s) only — no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: `.env` files (gitignored via `*.env` pattern) and `docs/actix-web-starter-template/.env.example`; any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment (Makefile has `up-prod`/`up-prod-d` targets distinct from `up-dev`/`up-test`)",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic (note Makefile's `up-prod`/`up-prod-d` targets vs `up-dev`/`up-test`)",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development on the culm project (Rust workspace tooling / scaffolder)",
+      "**Trusted repo**: /home/olorunshogo/Projects/Zunetra/culm (remote github.com:Zunetra/culm.git) — visibility unverified, treat as private per shipped default; confidential material OK to commit here, but secrets are never cleared into it by visibility alone",
+      "**Org-specific CLIs**: None configured",
+      "routine under this repo's docs/ and src/ prefixes for reading, planning, and (upon explicit approval per CLAUDE.md workflow) editing"
+    ]
+  }
+}

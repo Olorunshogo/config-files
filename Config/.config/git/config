@@ -1,0 +1,55 @@
+[user]
+	name = Olorunshogo Moses BAMTEFA
+	email = shownzy001@gmail.com
+	signingkey = /home/olorunshogo/.ssh/id_ed25519.pub
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+[init]
+	defaultBranch = main
+[help]
+	autocorrect = 1
+[color]
+	ui = auto
+[core]
+	editor = code --wait
+	fsmonitor = true
+	autocrlf = input
+	ignorecase = false
+	quotePath = false
+[fetch]
+	prune = true
+[pull]
+	ff = only
+	rebase = true
+[gc]
+	auto = 256
+[rebase]
+	autoStash = true
+[push]
+	default = simple
+[color "status"]
+	untracked = red
+[credential]
+	helper = store --file /home/olorunshogo/.config/git/credentials
+[alias]
+	lg = log --graph --oneline --decorate --all
+	st = status
+	co = checkout
+	br = branch
+[diff]
+	tool = vscode
+[difftool "vscode"]
+	cmd = code --wait --diff $LOCAL $REMOTE
+[merge]
+	tool = vscode
+	conflictstyle = diff3
+[mergetool "vscode"]
+	cmd = code --wait $MERGED
+[rerere]
+	enabled = true
+[gpg "ssh"]
+	allowedSignersFile = /home/olorunshogo/.ssh/allowed_signers

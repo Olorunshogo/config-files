@@ -437,3 +437,20 @@ FodyWeavers.xsd
 .zed/
 .windsurf/
 .continue/
+
+# === Config/ holds this machine's tracked dotfiles, so the agent-dir ignores above must not swallow it
+!Config/.claude/
+!Config/.claude/**
+# never track secrets or local machine state, even under Config/
+Config/.config/git/credentials
+Config/.ssh/id_*
+Config/**/*history*
+
+# === Example/template env files are documentation, never secrets - keep them trackable
+!.env.example
+!.env.*.example
+!*.env.example
+!.env.sample
+!.env.template
+!*example.env
+!*sample.env

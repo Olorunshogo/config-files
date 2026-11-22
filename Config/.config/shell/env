@@ -1,0 +1,31 @@
+# ~/.config/shell/env - single source of truth for cross-shell environment.
+# Sourced from ~/.bash_profile, ~/.bashrc and ~/.profile. POSIX sh only.
+# Keeps tool config/state/cache out of $HOME by pointing each tool at an
+# XDG location. Re-runnable: every line is an idempotent export.
+
+# === XDG base directories
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+
+# === Tool relocations
+# npm: userconfig replaces ~/.npmrc, cache replaces ~/.npm
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
+export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
+
+# node REPL history, replaces ~/.node_repl_history
+export NODE_REPL_HISTORY="$XDG_STATE_HOME/node/repl_history"
+
+# less history, replaces ~/.lesshst
+export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
+
+# wget: config carries hsts-file=, replaces ~/.wget-hsts and ~/.wgetrc
+export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
+
+# bash history, replaces ~/.bash_history (interactive shells only read this,
+# but exporting is harmless for non-bash)
+export HISTFILE="$XDG_STATE_HOME/bash/history"
+
+# git needs nothing here: ~/.config/git/config and ~/.config/git/ignore are
+# read automatically; credential + signing paths live in that config file.

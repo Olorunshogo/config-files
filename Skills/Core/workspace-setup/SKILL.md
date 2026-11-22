@@ -140,16 +140,23 @@ One `.vscode/settings.json` at the repo root, always, regardless of how many sta
 ### Stack-specific additions
 
 **TypeScript / JavaScript (any JS project):**
+
+Use the `js/ts.*` setting namespace. The older `typescript.*` keys for these preferences are deprecated — do not scaffold them.
+
+Point `js/ts.tsdk` at the package that actually owns the TypeScript install:
+- Repo-root `package.json` / `node_modules`: `"node_modules/typescript/lib"`
+- App under `frontend/`, `web/`, or `apps/<name>-web/`: `"frontend/node_modules/typescript/lib"` (or the matching path)
+
 ```json
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.preferences.quoteStyle": "single",
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.inlayHints.parameterNames.enabled": "literals",
-  "typescript.inlayHints.variableTypes.enabled": false,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "js/ts.tsdk": "node_modules/typescript/lib",
+  "js/ts.enablePromptUseWorkspaceTsdk": true,
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.preferences.quoteStyle": "single",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "js/ts.inlayHints.parameterNames.enabled": "literals",
+  "js/ts.inlayHints.variableTypes.enabled": false,
+  "js/ts.inlayHints.functionLikeReturnTypes.enabled": false,
   "js/ts.autoClosingTags.enabled": false,
 
   "eslint.enable": true,
@@ -444,7 +451,7 @@ When asked for a PR summary, use exactly this format - no extra sections, no att
 
 Rules:
 - Bold the area label, colon after it, then plain prose
-- Use a hyphen (-) instead of em dash anywhere
+- Never use em dashes, en dashes, or pause hyphens (` - `). Rewrite with periods, commas, colons, or parentheses instead. Compound words (`2-of-3`) and math (`a - b`) are fine.
 - Do NOT append "🤖 Generated with [Claude Code](...)" or any attribution line
 - Keep each bullet to one or two sentences max
 - Test plan items must be concrete and checkable, not vague ("verify it works")
